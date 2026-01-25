@@ -1,1 +1,949 @@
-# football_league
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ Футбольная Лига</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #009e60 100%);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 112rem;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #bfdbfe;
+            font-size: 16px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+            padding: 32px;
+            max-width: 28rem;
+            width: 100%;
+        }
+
+        .modal-content h3 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 24px;
+        }
+
+        .modal-content label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 8px 16px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 16px;
+            outline: none;
+        }
+
+        .modal-content input:focus {
+            border-color: #3b82f6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-cancel {
+            background-color: #4b5563;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background-color: #374151;
+        }
+
+        .config-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .config-row {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .config-row {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .config-group label {
+            font-weight: bold;
+            color: #1f2937;
+            font-size: 18px;
+        }
+
+        .team-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .team-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .team-btn.active {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .team-btn.inactive {
+            background-color: #d1d5db;
+            color: #1f2937;
+        }
+
+        .team-btn.inactive:hover {
+            background-color: #d4d7db;
+        }
+
+        .circles-input {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .circles-input input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+        }
+
+        .circles-input input:focus {
+            border-color: #2563eb;
+        }
+
+        .circles-input span {
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .btn-team-names {
+            padding: 12px 24px;
+            background-color: #a855f7;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            height: fit-content;
+        }
+
+        .btn-team-names:hover {
+            background-color: #9333ea;
+        }
+
+        .btn-add-circle {
+            padding: 12px 24px;
+            background-color: #16a34a;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            height: fit-content;
+        }
+
+        .btn-add-circle:hover {
+            background-color: #15803d;
+        }
+
+        .standings-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.15);
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .standings-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .standings-header h2 {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            border-bottom: 2px solid #d1d5db;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: bold;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        tbody tr.first-place {
+            background-color: #fef3c7;
+        }
+
+        .place {
+            font-size: 24px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .team-name {
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .stat-center {
+            text-align: center;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .stat-green {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .stat-gray {
+            color: #4b5563;
+            font-weight: bold;
+        }
+
+        .stat-red {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .stat-blue {
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        .stat-yellow {
+            color: #ca8a04;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .circle-section {
+            margin-bottom: 32px;
+        }
+
+        .circle-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .circle-header h3 {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .btn-delete-circle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background-color: #dc2626;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-delete-circle:hover:not(:disabled) {
+            background-color: #b91c1c;
+        }
+
+        .btn-delete-circle:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .match-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+
+        .match-teams {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .match-team {
+            flex: 1;
+            text-align: center;
+        }
+
+        .match-team-label {
+            font-size: 14px;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+
+        .match-team-name {
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .match-vs {
+            padding: 0 16px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .score-input {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .score-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-btn {
+            padding: 4px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            background-color: transparent;
+            transition: all 0.2s;
+            font-size: 18px;
+        }
+
+        .score-btn:hover {
+            background-color: #e5e7eb;
+        }
+
+        .score-value {
+            width: 40px;
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .score-separator {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6b7280;
+        }
+
+        .match-result {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .result-win {
+            color: #16a34a;
+        }
+
+        .result-draw {
+            color: #4b5563;
+        }
+
+        .reset-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 32px auto 0;
+            padding: 12px 24px;
+            background-color: #dc2626;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .reset-btn:hover {
+            background-color: #b91c1c;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        class FootballLeague {
+            constructor() {
+                this.numTeams = 3;
+                this.teamNames = {
+                    0: 'Команда А',
+                    1: 'Команда Б',
+                    2: 'Команда В'
+                };
+                this.circles = 1;
+                this.matches = this.generateMatches(3, 1);
+                this.showTeamSetup = false;
+                this.tempTeamNames = { ...this.teamNames };
+                
+                this.init();
+            }
+
+            init() {
+                this.render();
+                this.attachEventListeners();
+            }
+
+            generateMatches(teams, numCircles) {
+                const matchList = [];
+                let id = 1;
+                for (let circle = 1; circle <= numCircles; circle++) {
+                    for (let home = 0; home < teams; home++) {
+                        for (let away = home + 1; away < teams; away++) {
+                            matchList.push({
+                                id: id++,
+                                home,
+                                away,
+                                homeGoals: 0,
+                                awayGoals: 0,
+                                circle
+                            });
+                        }
+                    }
+                }
+                return matchList;
+            }
+
+            changeTeamCount(newCount) {
+                this.numTeams = newCount;
+                this.circles = 1;
+                this.matches = this.generateMatches(newCount, 1);
+                
+                const newNames = {};
+                for (let i = 0; i < newCount; i++) {
+                    const defaultName = newCount === 2 
+                        ? (i === 0 ? 'Команда 1' : 'Команда 2')
+                        : (i === 0 ? 'Команда А' : i === 1 ? 'Команда Б' : 'Команда В');
+                    newNames[i] = this.teamNames[i] || defaultName;
+                }
+                this.teamNames = newNames;
+                this.tempTeamNames = { ...newNames };
+                
+                this.render();
+                this.attachEventListeners();
+            }
+
+            updateTeamName(idx, name) {
+                this.tempTeamNames[idx] = name;
+            }
+
+            saveTeamNames() {
+                this.teamNames = { ...this.tempTeamNames };
+                this.showTeamSetup = false;
+                this.render();
+                this.attachEventListeners();
+            }
+
+            updateMatch(matchId, homeGoals, awayGoals) {
+                const match = this.matches.find(m => m.id === matchId);
+                if (match) {
+                    match.homeGoals = Math.max(0, homeGoals);
+                    match.awayGoals = Math.max(0, awayGoals);
+                }
+                this.render();
+                this.attachEventListeners();
+            }
+
+            updateCircles(newCircles) {
+                const num = Math.max(1, parseInt(newCircles) || 1);
+                this.circles = num;
+                this.matches = this.generateMatches(this.numTeams, num);
+                this.render();
+                this.attachEventListeners();
+            }
+
+            calculateStats() {
+                const stats = {};
+                for (let i = 0; i < this.numTeams; i++) {
+                    stats[i] = { games: 0, goals: 0, wins: 0, losses: 0, draws: 0, points: 0 };
+                }
+
+                this.matches.forEach(match => {
+                    const { home, away, homeGoals, awayGoals } = match;
+
+                    stats[home].games += 1;
+                    stats[home].goals += homeGoals;
+
+                    stats[away].games += 1;
+                    stats[away].goals += awayGoals;
+
+                    if (homeGoals > awayGoals) {
+                        stats[home].wins += 1;
+                        stats[home].points += 3;
+                        stats[away].losses += 1;
+                    } else if (awayGoals > homeGoals) {
+                        stats[away].wins += 1;
+                        stats[away].points += 3;
+                        stats[home].losses += 1;
+                    } else {
+                        stats[home].draws += 1;
+                        stats[away].draws += 1;
+                        stats[home].points += 1;
+                        stats[away].points += 1;
+                    }
+                });
+
+                return stats;
+            }
+
+            getLeaderboard(stats) {
+                return Array.from({ length: this.numTeams }, (_, i) => i).sort((a, b) => {
+                    if (stats[b].points !== stats[a].points) {
+                        return stats[b].points - stats[a].points;
+                    }
+                    return stats[b].goals - stats[a].goals;
+                });
+            }
+
+            resetAll() {
+                this.matches.forEach(m => {
+                    m.homeGoals = 0;
+                    m.awayGoals = 0;
+                });
+                this.render();
+                this.attachEventListeners();
+            }
+
+            deleteCircle(circleNum) {
+                if (this.circles <= 1) return;
+                this.matches = this.matches.filter(m => m.circle !== circleNum);
+                this.matches.forEach((m, idx) => m.id = idx + 1);
+                this.circles -= 1;
+                this.render();
+                this.attachEventListeners();
+            }
+
+            addCircle() {
+                const newCircle = this.circles + 1;
+                let nextId = Math.max(...this.matches.map(m => m.id)) + 1;
+                
+                for (let home = 0; home < this.numTeams; home++) {
+                    for (let away = home + 1; away < this.numTeams; away++) {
+                        this.matches.push({
+                            id: nextId++,
+                            home,
+                            away,
+                            homeGoals: 0,
+                            awayGoals: 0,
+                            circle: newCircle
+                        });
+                    }
+                }
+                this.circles = newCircle;
+                this.render();
+                this.attachEventListeners();
+            }
+
+            render() {
+                const stats = this.calculateStats();
+                const leaderboard = this.getLeaderboard(stats);
+                const root = document.getElementById('root');
+
+                let html = `
+                    ${this.showTeamSetup ? `
+                        <div class="modal-overlay active">
+                            <div class="modal-content">
+                                <h3>Настройка названий команд</h3>
+                                <div id="team-inputs">
+                                    ${Array.from({ length: this.numTeams }).map((_, idx) => `
+                                        <label>Команда ${idx + 1}:</label>
+                                        <input type="text" class="team-name-input" data-idx="${idx}" value="${this.tempTeamNames[idx] || ''}">
+                                    `).join('')}
+                                </div>
+                                <div class="modal-buttons">
+                                    <button class="btn-save" id="btn-save-names">Сохранить</button>
+                                    <button class="btn-cancel" id="btn-cancel-names">Отмена</button>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="container">
+                        <div class="header">
+                            <h1>⚽ Футбольная Лига</h1>
+                            <p>Неограниченное количество кругов • Все команды играют друг с другом</p>
+                        </div>
+
+                        <div class="config-section">
+                            <div class="config-row">
+                                <div class="config-group">
+                                    <label>Количество команд:</label>
+                                    <div class="team-buttons">
+                                        <button class="team-btn ${this.numTeams === 2 ? 'active' : 'inactive'}" data-teams="2">2 команды</button>
+                                        <button class="team-btn ${this.numTeams === 3 ? 'active' : 'inactive'}" data-teams="3">3 команды</button>
+                                    </div>
+                                </div>
+
+                                <button class="btn-team-names" id="btn-team-names">⚙️ Названия команд</button>
+
+                                <div class="config-group">
+                                    <label>Количество кругов:</label>
+                                    <div class="circles-input">
+                                        <input type="number" id="circles-input" min="1" value="${this.circles}">
+                                        <span>(${this.matches.length} матчей)</span>
+                                    </div>
+                                </div>
+
+                                <button class="btn-add-circle" id="btn-add-circle">+ Добавить круг</button>
+                            </div>
+                        </div>
+
+                        <div class="standings-section">
+                            <div class="standings-header">
+                                <span>🏆</span>
+                                <h2>Турнирная таблица</h2>
+                            </div>
+                            
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Место</th>
+                                            <th>Команда</th>
+                                            <th style="text-align: center;">Матчей</th>
+                                            <th style="text-align: center;">Побед</th>
+                                            <th style="text-align: center;">Ничьих</th>
+                                            <th style="text-align: center;">Поражений</th>
+                                            <th style="text-align: center;">Голов</th>
+                                            <th style="text-align: center;">Очки</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${leaderboard.map((teamIdx, place) => `
+                                            <tr class="${place === 0 ? 'first-place' : ''}">
+                                                <td class="place">${place + 1}</td>
+                                                <td class="team-name">${this.teamNames[teamIdx]}</td>
+                                                <td class="stat-center">${stats[teamIdx].games}</td>
+                                                <td class="stat-center stat-green">${stats[teamIdx].wins}</td>
+                                                <td class="stat-center stat-gray">${stats[teamIdx].draws}</td>
+                                                <td class="stat-center stat-red">${stats[teamIdx].losses}</td>
+                                                <td class="stat-center stat-blue">${stats[teamIdx].goals}</td>
+                                                <td class="stat-center stat-yellow">${stats[teamIdx].points}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        ${Array.from({ length: this.circles }).map((_, idx) => {
+                            const circle = idx + 1;
+                            const circleMatches = this.matches.filter(m => m.circle === circle);
+                            return `
+                                <div class="circle-section">
+                                    <div class="circle-header">
+                                        <h3>Круг ${circle}</h3>
+                                        <button class="btn-delete-circle" data-circle="${circle}" ${this.circles === 1 ? 'disabled' : ''}>🗑️ Удалить круг</button>
+                                    </div>
+                                    <div class="matches-grid">
+                                        ${circleMatches.map(match => `
+                                            <div class="match-card">
+                                                <div class="match-teams">
+                                                    <div class="match-team">
+                                                        <div class="match-team-label">Хозяева</div>
+                                                        <div class="match-team-name">${this.teamNames[match.home]}</div>
+                                                    </div>
+                                                    <div class="match-vs">vs</div>
+                                                    <div class="match-team">
+                                                        <div class="match-team-label">Гости</div>
+                                                        <div class="match-team-name">${this.teamNames[match.away]}</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="score-input">
+                                                    <div class="score-group">
+                                                        <button class="score-btn btn-home-minus" data-match-id="${match.id}">➖</button>
+                                                        <div class="score-value">${match.homeGoals}</div>
+                                                        <button class="score-btn btn-home-plus" data-match-id="${match.id}">➕</button>
+                                                    </div>
+
+                                                    <div class="score-separator">:</div>
+
+                                                    <div class="score-group">
+                                                        <button class="score-btn btn-away-minus" data-match-id="${match.id}">➖</button>
+                                                        <div class="score-value">${match.awayGoals}</div>
+                                                        <button class="score-btn btn-away-plus" data-match-id="${match.id}">➕</button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="match-result">
+                                                    ${match.homeGoals > match.awayGoals ?
+                                                        `<span class="result-win">Победа ${this.teamNames[match.home]}</span>` :
+                                                    match.awayGoals > match.homeGoals ?
+                                                        `<span class="result-win">Победа ${this.teamNames[match.away]}</span>` :
+                                                        `<span class="result-draw">Ничья</span>`
+                                                    }
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+
+                        <button class="reset-btn" id="btn-reset">🔄 Сбросить результаты</button>
+                    </div>
+                `;
+
+                root.innerHTML = html;
+            }
+
+            attachEventListeners() {
+                // Team count buttons
+                document.querySelectorAll('[data-teams]').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.changeTeamCount(parseInt(e.target.dataset.teams)));
+                });
+
+                // Team names modal
+                const btnTeamNames = document.getElementById('btn-team-names');
+                if (btnTeamNames) {
+                    btnTeamNames.addEventListener('click', () => {
+                        this.showTeamSetup = true;
+                        this.render();
+                        this.attachEventListeners();
+                    });
+                }
+
+                // Team name inputs
+                document.querySelectorAll('.team-name-input').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        this.updateTeamName(parseInt(e.target.dataset.idx), e.target.value);
+                    });
+                });
+
+                // Save team names
+                const btnSaveNames = document.getElementById('btn-save-names');
+                if (btnSaveNames) {
+                    btnSaveNames.addEventListener('click', () => this.saveTeamNames());
+                }
+
+                // Cancel team names
+                const btnCancelNames = document.getElementById('btn-cancel-names');
+                if (btnCancelNames) {
+                    btnCancelNames.addEventListener('click', () => {
+                        this.showTeamSetup = false;
+                        this.render();
+                        this.attachEventListeners();
+                    });
+                }
+
+                // Circles input
+                const circlesInput = document.getElementById('circles-input');
+                if (circlesInput) {
+                    circlesInput.addEventListener('change', (e) => this.updateCircles(e.target.value));
+                }
+
+                // Add circle button
+                const btnAddCircle = document.getElementById('btn-add-circle');
+                if (btnAddCircle) {
+                    btnAddCircle.addEventListener('click', () => this.addCircle());
+                }
+
+                // Delete circle buttons
+                document.querySelectorAll('[data-circle]').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.deleteCircle(parseInt(e.target.dataset.circle)));
+                });
+
+                // Match score buttons
+                document.querySelectorAll('.btn-home-minus').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const matchId = parseInt(e.target.dataset.matchId);
+                        const match = this.matches.find(m => m.id === matchId);
+                        if (match) this.updateMatch(matchId, match.homeGoals - 1, match.awayGoals);
+                    });
+                });
+
+                document.querySelectorAll('.btn-home-plus').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const matchId = parseInt(e.target.dataset.matchId);
+                        const match = this.matches.find(m => m.id === matchId);
+                        if (match) this.updateMatch(matchId, match.homeGoals + 1, match.awayGoals);
+                    });
+                });
+
+                document.querySelectorAll('.btn-away-minus').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const matchId = parseInt(e.target.dataset.matchId);
+                        const match = this.matches.find(m => m.id === matchId);
+                        if (match) this.updateMatch(matchId, match.homeGoals, match.awayGoals - 1);
+                    });
+                });
+
+                document.querySelectorAll('.btn-away-plus').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const matchId = parseInt(e.target.dataset.matchId);
+                        const match = this.matches.find(m => m.id === matchId);
+                        if (match) this.updateMatch(matchId, match.homeGoals, match.awayGoals + 1);
+                    });
+                });
+
+                // Reset button
+                const btnReset = document.getElementById('btn-reset');
+                if (btnReset) {
+                    btnReset.addEventListener('click', () => this.resetAll());
+                }
+            }
+        }
+
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new FootballLeague();
+        });
+    </script>
+</body>
+</html>
