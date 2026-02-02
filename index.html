@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эталонная лига</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .setup-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .teams-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .team-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .team-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .team-item input {
+            flex: 1;
+            padding: 8px;
+        }
+        
+        .team-item span {
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.9em;
+        }
+        
+        .setup-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .add-match-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .match-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+        
+        .match-grid {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .match-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            position: relative;
+        }
+        
+        .match-header {
+            display: grid;
+            grid-template-columns: 1fr 150px 1fr;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .team-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .score-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .score-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .score-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #667eea;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .score-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-score {
+            padding: 5px 10px;
+            font-size: 1.2em;
+            width: 40px;
+            height: 35px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 700;
+        }
+        
+        .btn-plus {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-plus:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        
+        .btn-minus {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-minus:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        
+        .vs {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .btn-delete-match {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+        
+        .btn-delete-match:hover {
+            background: #dc2626;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .points {
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .setup-grid,
+            .match-form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .match-header {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .team-name {
+                text-align: center !important;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ Эталонная лига</h1>
+            <p>Управляйте своей футбольной лигой</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>Настройка команд</h2>
+                <div class="setup-grid">
+                    <div class="form-group">
+                        <label for="teamCount">Количество команд:</label>
+                        <input type="number" id="teamCount" min="2" max="20" value="4">
+                    </div>
+                </div>
+                
+                <div class="teams-container" id="teamsContainer"></div>
+                
+                <div class="setup-buttons">
+                    <button class="btn btn-primary" onclick="createTeams()">Создать команды</button>
+                    <button class="btn btn-success" onclick="startLeague()">Начать лигу</button>
+                    <button class="btn btn-danger" onclick="resetAll()">Сбросить всё</button>
+                </div>
+            </div>
+            
+            <div class="section" id="matchesSection" style="display: none;">
+                <h2>Матчи</h2>
+                <div class="match-grid" id="matchesContainer"></div>
+            </div>
+            
+            <div class="section" id="addMatchSection" style="display: none;">
+                <h2>Добавить матч</h2>
+                <div class="add-match-form">
+                    <div class="match-form-grid">
+                        <div class="form-group">
+                            <label for="homeTeamSelect">Хозяева:</label>
+                            <select id="homeTeamSelect"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="awayTeamSelect">Гости:</label>
+                            <select id="awayTeamSelect"></select>
+                        </div>
+                        <button class="btn btn-success" onclick="addMatch()">Добавить матч</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section" id="tableSection" style="display: none;">
+                <h2>Турнирная таблица</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="stat">#</th>
+                                <th>Команда</th>
+                                <th class="stat">И</th>
+                                <th class="stat">В</th>
+                                <th class="stat">Н</th>
+                                <th class="stat">П</th>
+                                <th class="stat">Мячи</th>
+                                <th class="stat">Очки</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let league = {
+            teams: [],
+            matches: [],
+            nextMatchId: 0
+        };
+        
+        function createTeams() {
+            const count = parseInt(document.getElementById('teamCount').value);
+            if (count < 2 || count > 20) {
+                return; // Просто не создаем команды
+            }
+            
+            const defaultNames = ['Синие', 'Желтые', 'Красные', 'Цветные'];
+            const container = document.getElementById('teamsContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const defaultName = i < defaultNames.length ? defaultNames[i] : `Команда ${i + 1}`;
+                const input = document.createElement('div');
+                input.className = 'team-item';
+                input.innerHTML = `
+                    <span>Команда ${i + 1}:</span>
+                    <input type="text" placeholder="Введите название" class="team-input" value="${defaultName}">
+                `;
+                container.appendChild(input);
+            }
+        }
+        
+        function startLeague() {
+            const inputs = document.querySelectorAll('.team-input');
+            
+            if (inputs.length === 0) {
+                return; // Просто не запускаем лигу
+            }
+            
+            league.teams = Array.from(inputs).map((input, idx) => ({
+                id: idx,
+                name: input.value || `Команда ${idx + 1}`,
+                wins: 0,
+                draws: 0,
+                losses: 0,
+                goalsFor: 0,
+                goalsAgainst: 0
+            }));
+            
+            league.matches = [];
+            
+            updateTeamSelects();
+            updateStandings();
+            
+            document.getElementById('addMatchSection').style.display = 'block';
+            document.getElementById('matchesSection').style.display = 'block';
+            document.getElementById('tableSection').style.display = 'block';
+        }
+        
+        function updateTeamSelects() {
+            const homeSelect = document.getElementById('homeTeamSelect');
+            const awaySelect = document.getElementById('awayTeamSelect');
+            
+            homeSelect.innerHTML = league.teams.map(team => 
+                `<option value="${team.id}">${team.name}</option>`
+            ).join('');
+            
+            awaySelect.innerHTML = league.teams.map(team => 
+                `<option value="${team.id}">${team.name}</option>`
+            ).join('');
+            
+            // Устанавливаем разные команды по умолчанию
+            if (league.teams.length > 1) {
+                awaySelect.selectedIndex = 1;
+            }
+        }
+        
+        function addMatch() {
+            const homeTeamId = parseInt(document.getElementById('homeTeamSelect').value);
+            const awayTeamId = parseInt(document.getElementById('awayTeamSelect').value);
+            
+            if (homeTeamId === awayTeamId) {
+                return; // Просто не добавляем матч если команды одинаковые
+            }
+            
+            league.matches.push({
+                id: league.nextMatchId++,
+                homeTeam: homeTeamId,
+                awayTeam: awayTeamId,
+                homeGoals: 0,
+                awayGoals: 0
+            });
+            
+            renderMatches();
+            updateStandings();
+        }
+        
+        function deleteMatch(matchIdx) {
+            if (confirm('Удалить этот матч?')) {
+                league.matches.splice(matchIdx, 1);
+                renderMatches();
+                updateStandings();
+            }
+        }
+        
+        function renderMatches() {
+            const container = document.getElementById('matchesContainer');
+            container.innerHTML = '';
+            
+            if (league.matches.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">Матчи еще не добавлены</p>';
+                return;
+            }
+            
+            league.matches.forEach((match) => {
+                const homeTeam = league.teams[match.homeTeam];
+                const awayTeam = league.teams[match.awayTeam];
+                
+                const card = document.createElement('div');
+                card.className = 'match-card';
+                card.dataset.matchId = match.id;
+                card.innerHTML = `
+                    <button class="btn-delete-match" data-match-id="${match.id}">✕</button>
+                    <div class="match-header">
+                        <div class="team-name">${homeTeam.name}</div>
+                        <div class="score-display">
+                            <div class="score-box">
+                                <div class="score-value" data-match-id="${match.id}" data-team="home">${match.homeGoals}</div>
+                                <div class="score-buttons">
+                                    <button class="btn-score btn-plus" data-match-id="${match.id}" data-team="home">+</button>
+                                    <button class="btn-score btn-minus" data-match-id="${match.id}" data-team="home">−</button>
+                                </div>
+                            </div>
+                            <div class="vs">vs</div>
+                            <div class="score-box">
+                                <div class="score-value" data-match-id="${match.id}" data-team="away">${match.awayGoals}</div>
+                                <div class="score-buttons">
+                                    <button class="btn-score btn-plus" data-match-id="${match.id}" data-team="away">+</button>
+                                    <button class="btn-score btn-minus" data-match-id="${match.id}" data-team="away">−</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-name" style="text-align: right;">${awayTeam.name}</div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+        
+        // Событийная делегация для всех кнопок в контейнере матчей
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('matchesContainer');
+            
+            container.addEventListener('click', function(e) {
+                // Удаление матча
+                if (e.target.classList.contains('btn-delete-match')) {
+                    const matchId = parseInt(e.target.dataset.matchId);
+                    const index = league.matches.findIndex(m => m.id === matchId);
+                    if (index !== -1) {
+                        league.matches.splice(index, 1);
+                        renderMatches();
+                        updateStandings();
+                    }
+                }
+                
+                // Изменение счета
+                if (e.target.classList.contains('btn-score')) {
+                    const matchId = parseInt(e.target.dataset.matchId);
+                    const team = e.target.dataset.team;
+                    const isPlus = e.target.classList.contains('btn-plus');
+                    
+                    const match = league.matches.find(m => m.id === matchId);
+                    if (!match) return;
+                    
+                    if (team === 'home') {
+                        if (isPlus) {
+                            match.homeGoals++;
+                        } else if (match.homeGoals > 0) {
+                            match.homeGoals--;
+                        }
+                    } else {
+                        if (isPlus) {
+                            match.awayGoals++;
+                        } else if (match.awayGoals > 0) {
+                            match.awayGoals--;
+                        }
+                    }
+                    
+                    // Обновляем отображение счета
+                    const card = e.target.closest('.match-card');
+                    const scoreValues = card.querySelectorAll('.score-value');
+                    scoreValues.forEach(sv => {
+                        if (parseInt(sv.dataset.matchId) === matchId) {
+                            if (sv.dataset.team === 'home') {
+                                sv.textContent = match.homeGoals;
+                            } else {
+                                sv.textContent = match.awayGoals;
+                            }
+                        }
+                    });
+                    
+                    updateStandings();
+                }
+            });
+        });
+        
+        function updateStandings() {
+            league.teams.forEach(team => {
+                team.wins = 0;
+                team.draws = 0;
+                team.losses = 0;
+                team.goalsFor = 0;
+                team.goalsAgainst = 0;
+            });
+            
+            league.matches.forEach(match => {
+                const homeTeam = league.teams[match.homeTeam];
+                const awayTeam = league.teams[match.awayTeam];
+                
+                homeTeam.goalsFor += match.homeGoals;
+                homeTeam.goalsAgainst += match.awayGoals;
+                awayTeam.goalsFor += match.awayGoals;
+                awayTeam.goalsAgainst += match.homeGoals;
+                
+                if (match.homeGoals > match.awayGoals) {
+                    homeTeam.wins++;
+                    awayTeam.losses++;
+                } else if (match.homeGoals < match.awayGoals) {
+                    awayTeam.wins++;
+                    homeTeam.losses++;
+                } else {
+                    // Ничья (включая 0:0)
+                    homeTeam.draws++;
+                    awayTeam.draws++;
+                }
+            });
+            
+            renderTable();
+        }
+        
+        function renderTable() {
+            const standings = league.teams
+                .map(team => ({
+                    ...team,
+                    games: team.wins + team.draws + team.losses,
+                    points: team.wins * 3 + team.draws
+                }))
+                .sort((a, b) => {
+                    if (b.points !== a.points) return b.points - a.points;
+                    if ((b.goalsFor - b.goalsAgainst) !== (a.goalsFor - a.goalsAgainst)) {
+                        return (b.goalsFor - b.goalsAgainst) - (a.goalsFor - a.goalsAgainst);
+                    }
+                    return b.goalsFor - a.goalsFor;
+                });
+            
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = standings.map((team, idx) => `
+                <tr>
+                    <td class="stat">${idx + 1}</td>
+                    <td><strong>${team.name}</strong></td>
+                    <td class="stat">${team.games}</td>
+                    <td class="stat">${team.wins}</td>
+                    <td class="stat">${team.draws}</td>
+                    <td class="stat">${team.losses}</td>
+                    <td class="stat">${team.goalsFor}:${team.goalsAgainst}</td>
+                    <td class="points stat">${team.points}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function resetAll() {
+            league = {
+                teams: [],
+                matches: [],
+                nextMatchId: 0
+            };
+            
+            document.getElementById('teamsContainer').innerHTML = '';
+            document.getElementById('matchesContainer').innerHTML = '';
+            document.getElementById('tableBody').innerHTML = '';
+            document.getElementById('addMatchSection').style.display = 'none';
+            document.getElementById('matchesSection').style.display = 'none';
+            document.getElementById('tableSection').style.display = 'none';
+            document.getElementById('teamCount').value = 4;
+            createTeams();
+        }
+        
+        // Initialize on load
+        createTeams();
+    </script>
+</body>
+</html>
